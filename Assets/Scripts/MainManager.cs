@@ -10,7 +10,9 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
-    public Text ScoreText;
+    public Text bestScoreText;
+    public Text myScoreText;
+    public Text myBestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,7 +20,10 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+   
+
+ 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,18 +64,54 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                SceneManager.LoadScene("Menu");
+            }
         }
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        myScoreText.text = $"Score : {m_Points}";
+
+        if (MainManagerX.currentPlayer.score < m_Points)
+        {
+            myBestScoreText.text = "My Best : "+m_Points;
+                    
+        }  
+        else
+        {
+            myBestScoreText.text = "My Best : " + MainManagerX.currentPlayer.score;
+        }
+
+        if (m_Points < MainManagerX.bestPlayer.score)
+        {
+            bestScoreText.text = "Best : " + MainManagerX.bestPlayer.name + " : " + MainManagerX.bestPlayer.score;
+
+        }else
+        {
+            bestScoreText.text = "Best : " + MainManagerX.currentPlayer.name + " : " + m_Points;
+        }
+        
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        if (m_Points>MainManagerX.currentPlayer.score)
+        {
+          MainManagerX.currentPlayer.score = m_Points;
+          MainManagerX.players[MainManagerX.currentPlayer.index] = MainManagerX.currentPlayer.SavetoString();
+          MainManagerX.SaveList();
+        }
+
+        if (m_Points > MainManagerX.bestPlayer.score)
+        {
+            MainManagerX.bestPlayer = MainManagerX.currentPlayer;
+            MainManagerX.SaveBestPlayer();
+        }
     }
 }
