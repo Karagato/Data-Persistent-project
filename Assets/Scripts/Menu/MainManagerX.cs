@@ -20,23 +20,16 @@ public class MainManagerX : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        //LoadColor();//carga de memoria el color 
+        
     }
     // Start is called before the first frame update
     void Start()
     {
-        //File.Delete(Application.persistentDataPath + "/savelist.json");
-        LoadBestPlayerdata();
-        /*if(bestPlayer == null)
-        {
-            bestPlayer = new Player();
-        }*/
-        LoadListData();
-     /*   if (players == null)
-        {
-            players = new List<string>();
-
-        }*/
+       /* DeleteData();*/
+       LoadBestPlayerdata();
+       
+       LoadListData();
+    
     }
 
     void LoadBestPlayerdata()
@@ -45,17 +38,22 @@ public class MainManagerX : MonoBehaviour
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);//lee la clase
-            string data = JsonUtility.FromJson<string>(json);//la transforma en la modelo
 
-            bestPlayer = ChangeFormat(data);//toma el dato para recuperarlo
+            bestPlayer = ChangeFormat(json);//toma el dato para recuperarlo
         }
         if (bestPlayer == null)
         {
             bestPlayer = new Player(0,"",0);
         }
     }
-        // Update is called once per frame
-        void Update()
+
+    public static void SaveBestPlayer()
+    {
+
+        File.WriteAllText(Application.persistentDataPath + "/saveBestPlayer.json", bestPlayer.SavetoString());//la guarda
+    }
+    // Update is called once per frame
+    void Update()
     {
 
     }
@@ -111,11 +109,7 @@ public class MainManagerX : MonoBehaviour
         File.WriteAllText(Application.persistentDataPath + "/savelist.json", json);//la guarda
     }
 
-    public static void SaveBestPlayer()
-    {
-
-        File.WriteAllText(Application.persistentDataPath + "/saveBestPlayer.json", bestPlayer.SavetoString());//la guarda
-    }
+    
 
     [System.Serializable]
     public class SaveListData
@@ -134,6 +128,12 @@ public class MainManagerX : MonoBehaviour
     {
 
         return JsonUtility.FromJson<MainManagerX.Player>(original);
+    }
+
+    private void DeleteData()
+    {
+        File.Delete(Application.persistentDataPath + "/savelist.json");
+        File.Delete(Application.persistentDataPath + "/saveBestPlayer.json");
     }
 
 }
